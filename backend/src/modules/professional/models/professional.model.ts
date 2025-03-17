@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Appointment } from '../../appointment/models/appointment.model';
 import { Clinic } from '../../clinic/models/clinic.model';
 import { Schedule } from '../../schedule/models/schedule.model';
 
@@ -16,7 +17,7 @@ export class Professional {
   @Field()
   email: string;
 
-  @Field(() => String)
+  @Field(() => ID)
   clinicId: string;
 
   @Field(() => Clinic)
@@ -24,6 +25,9 @@ export class Professional {
 
   @Field(() => [Schedule])
   schedules: Schedule[];
+
+  @Field(() => [Appointment])
+  appointments: Appointment[];
 
   @Field()
   createdAt: Date;

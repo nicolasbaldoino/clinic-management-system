@@ -5,7 +5,7 @@ import { ScheduleService } from './schedule.service';
 
 @Module({
   imports: [PrismaModule],
-  providers: [ScheduleResolver, ScheduleService],
+  providers: [ScheduleService, ScheduleResolver],
   exports: [ScheduleService],
 })
 export class ScheduleModule {} 

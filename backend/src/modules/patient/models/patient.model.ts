@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Appointment } from '../../appointment/models/appointment.model';
 
 @ObjectType()
 export class Patient {
@@ -16,6 +17,9 @@ export class Patient {
 
   @Field()
   phone: string;
+
+  @Field(() => [Appointment])
+  appointments: Appointment[];
 
   @Field()
   createdAt: Date;

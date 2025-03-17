@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateProfessionalInput, UpdateProfessionalInput } from './dto/professional.input';
 import { Professional } from './models/professional.model';
 import { ProfessionalService } from './professional.service';
 
@@ -9,18 +10,23 @@ import { ProfessionalService } from './professional.service';
 export class ProfessionalResolver {
   constructor(private readonly professionalService: ProfessionalService) {}
 
+  @Mutation(() => Professional)
+  createProfessional(@Args('createProfessionalInput') createProfessionalInput: CreateProfessionalInput) {
+    return this.professionalService.create(createProfessionalInput);
+  }
+
   @Query(() => [Professional])
-  async professionals() {
+  professionals() {
     return this.professionalService.findAll();
   }
 
   @Query(() => Professional)
-  async professional(@Args('id', { type: () => ID }) id: string) {
+  professional(@Args('id', { type: () => ID }) id: string) {
     return this.professionalService.findOne(id);
   }
 
   @Query(() => [Professional])
-  async professionalsByClinic(@Args('clinicId', { type: () => ID }) clinicId: string) {
+  professionalsByClinic(@Args('clinicId', { type: () => ID }) clinicId: string) {
     return this.professionalService.findByClinic(clinicId);
   }
 
@@ -30,5 +36,18 @@ export class ProfessionalResolver {
     @Args('clinicId', { type: () => ID }) clinicId: string,
   ) {
     return this.professionalService.findBySpeciality(speciality, clinicId);
+  }
+
+  @Mutation(() => Professional)
+  updateProfessional(
+    @Args('id', { type: () => ID }) id: string,
+    @Args('updateProfessionalInput') updateProfessionalInput: UpdateProfessionalInput,
+  ) {
+    return this.professionalService.update(id, updateProfessionalInput);
+  }
+
+  @Mutation(() => Professional)
+  removeProfessional(@Args('id', { type: () => ID }) id: string) {
+    return this.professionalService.remove(id);
   }
 } 

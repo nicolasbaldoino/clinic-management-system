@@ -5,7 +5,7 @@ import { ClinicService } from './clinic.service';
 
 @Module({
   imports: [PrismaModule],
-  providers: [ClinicResolver, ClinicService],
+  providers: [ClinicService, ClinicResolver],
   exports: [ClinicService],
 })
 export class ClinicModule {} 

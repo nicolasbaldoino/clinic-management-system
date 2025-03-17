@@ -5,7 +5,7 @@ import { ProfessionalService } from './professional.service';
 
 @Module({
   imports: [PrismaModule],
-  providers: [ProfessionalResolver, ProfessionalService],
+  providers: [ProfessionalService, ProfessionalResolver],
   exports: [ProfessionalService],
 })
 export class ProfessionalModule {} 

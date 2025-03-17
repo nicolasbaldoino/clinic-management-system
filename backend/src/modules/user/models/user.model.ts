@@ -13,10 +13,13 @@ export class User {
   @Field()
   email: string;
 
+  @Field()
+  password: string;
+
   @Field(() => UserRole)
   role: UserRole;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => ID, { nullable: true })
   clinicId?: string;
 
   @Field(() => Clinic, { nullable: true })

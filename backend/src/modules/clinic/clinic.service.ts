@@ -4,7 +4,7 @@ import { CreateClinicInput, UpdateClinicInput } from './dto/clinic.input';
 
 @Injectable()
 export class ClinicService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createClinicInput: CreateClinicInput) {
     return this.prisma.clinic.create({

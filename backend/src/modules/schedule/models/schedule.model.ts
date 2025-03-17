@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ScheduleStatus } from '@prisma/client';
+import { Appointment } from '../../appointment/models/appointment.model';
 import { Clinic } from '../../clinic/models/clinic.model';
 import { Professional } from '../../professional/models/professional.model';
 
@@ -20,17 +21,20 @@ export class Schedule {
   @Field(() => ScheduleStatus)
   status: ScheduleStatus;
 
-  @Field(() => String)
+  @Field(() => ID)
   clinicId: string;
 
   @Field(() => Clinic)
   clinic: Clinic;
 
-  @Field(() => String)
+  @Field(() => ID)
   professionalId: string;
 
   @Field(() => Professional)
   professional: Professional;
+
+  @Field(() => Appointment, { nullable: true })
+  appointment?: Appointment;
 
   @Field()
   createdAt: Date;
