@@ -12,8 +12,8 @@ async function main() {
   // Limpar dados existentes
   await prisma.appointment.deleteMany();
   await prisma.schedule.deleteMany();
-  await prisma.professional.deleteMany();
   await prisma.patient.deleteMany();
+  await prisma.professional.deleteMany();
   await prisma.user.deleteMany();
   await prisma.clinic.deleteMany();
 
@@ -46,6 +46,7 @@ async function main() {
     clinics.map((clinic, index) =>
       prisma.user.create({
         data: {
+          name: `Administrador ${clinic.name}`,
           email: `admin${index + 1}@clinica.com`,
           password: adminPassword,
           role: UserRole.ADMIN,
@@ -60,7 +61,7 @@ async function main() {
     prisma.patient.create({
       data: {
         name: 'João Silva',
-        cpf: '123.456.789-00',
+        cpf: '12345678900',
         email: 'joao.silva@email.com',
         phone: '(11) 98765-4321',
       },
@@ -68,7 +69,7 @@ async function main() {
     prisma.patient.create({
       data: {
         name: 'Maria Santos',
-        cpf: '987.654.321-00',
+        cpf: '98765432100',
         email: 'maria.santos@email.com',
         phone: '(11) 98765-1234',
       },
@@ -76,7 +77,7 @@ async function main() {
     prisma.patient.create({
       data: {
         name: 'Pedro Oliveira',
-        cpf: '456.789.123-00',
+        cpf: '45678912300',
         email: 'pedro.oliveira@email.com',
         phone: '(11) 98765-5678',
       },
@@ -84,7 +85,7 @@ async function main() {
     prisma.patient.create({
       data: {
         name: 'Ana Costa',
-        cpf: '789.123.456-00',
+        cpf: '78912345600',
         email: 'ana.costa@email.com',
         phone: '(11) 98765-8765',
       },
@@ -92,7 +93,6 @@ async function main() {
   ]);
 
   // Criar profissionais
-  const professionalPassword = await hashPassword('senha123');
   const specialties = [
     'Cardiologia',
     'Dermatologia',
@@ -102,7 +102,7 @@ async function main() {
     'Oftalmologia',
   ];
 
-  await Promise.all(
+  const professionals = await Promise.all(
     clinics.flatMap((clinic) =>
       // Criar 2 profissionais por clínica
       [0, 1].map((i) =>
@@ -110,8 +110,7 @@ async function main() {
           data: {
             name: `Dr. ${i === 0 ? 'Carlos' : 'Ana'} ${clinic.name.split(' ')[1]}`,
             email: `profissional${i + 1}.${clinic.name.split(' ')[1].toLowerCase()}@clinica.com`,
-            password: professionalPassword,
-            speciality: specialties[Math.floor(Math.random() * specialties.length)],
+            speciality: specialties[i % specialties.length],
             clinicId: clinic.id,
           },
         }),
@@ -120,7 +119,6 @@ async function main() {
   );
 
   // Criar alguns horários disponíveis para os profissionais
-  const professionals = await prisma.professional.findMany();
   const today = new Date();
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 

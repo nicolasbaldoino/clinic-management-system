@@ -1,129 +1,84 @@
-import { UserRole } from '.prisma/client';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma.service';
+import { LoginDto } from './dto/login.dto';
+import { MeResponseDto } from './dto/me.dto';
+import { PatientLoginDto } from './dto/patient-login.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
+    private prisma: PrismaService,
+    private jwtService: JwtService,
   ) {}
 
-  async validateAdmin(email: string, password: string) {
-    const admin = await this.prisma.user.findFirst({
-      where: { 
-        email,
-        role: UserRole.ADMIN
-      },
-      include: {
-        clinic: true
-      }
+  async validateInternalUser(loginDto: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: loginDto.email },
     });
 
-    if (!admin) {
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return admin;
-  }
-
-  async validatePatient(cpf: string) {
-    const patient = await this.prisma.patient.findUnique({
-      where: { cpf }
-    });
-
-    if (!patient) {
-      throw new UnauthorizedException('Patient not found');
-    }
-
-    return patient;
-  }
-
-  async adminLogin(email: string, password: string) {
-    const admin = await this.validateAdmin(email, password);
-
-    const payload = {
-      sub: admin.id,
-      email: admin.email,
-      role: UserRole.ADMIN,
-      clinicId: admin.clinicId
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      clinicId: user.clinicId || undefined,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: admin.id,
-        email: admin.email,
-        clinicId: admin.clinicId,
-        clinicName: admin.clinic?.name
-      }
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        clinicId: user.clinicId,
+      },
     };
   }
 
-  async patientLogin(cpf: string) {
-    const patient = await this.validatePatient(cpf);
+  async validatePatient(patientLoginDto: PatientLoginDto) {
+    const patient = await this.prisma.patient.findUnique({
+      where: { cpf: patientLoginDto.cpf },
+    });
 
-    const payload = {
-      sub: patient.id,
-      cpf: patient.cpf,
-      role: UserRole.PATIENT
-    };
+    if (!patient) {
+      throw new UnauthorizedException('Invalid CPF');
+    }
 
     return {
-      access_token: this.jwtService.sign(payload),
       patient: {
         id: patient.id,
         name: patient.name,
-        cpf: patient.cpf
-      }
+        cpf: patient.cpf,
+        email: patient.email,
+        phone: patient.phone,
+      },
     };
   }
 
-  async me(user: { id: string; role: UserRole }) {
-    if (user.role === UserRole.ADMIN) {
-      const admin = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: { clinic: true }
-      });
-
-      if (!admin) {
-        throw new UnauthorizedException();
-      }
-
-      return {
-        id: admin.id,
-        email: admin.email,
-        role: UserRole.ADMIN,
-        clinicId: admin.clinicId,
-        clinicName: admin.clinic?.name
-      };
-    } else {
-      const patient = await this.prisma.patient.findUnique({
-        where: { id: user.id }
-      });
-
-      if (!patient) {
-        throw new UnauthorizedException();
-      }
-
-      return {
-        id: patient.id,
-        name: patient.name,
-        cpf: patient.cpf,
-        role: UserRole.PATIENT
-      };
-    }
-  }
-
-  async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+  async me(user: any): Promise<MeResponseDto> {
+    // It's an internal user
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      clinicId: user.clinicId,
+    };
   }
 }
