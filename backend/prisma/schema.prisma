@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(ADMIN)
+  clinicId  String?
+  clinic    Clinic?  @relation(fields: [clinicId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Clinic {
+  id            String         @id @default(uuid())
+  name          String
+  users         User[]
+  professionals Professional[]
+  appointments  Appointment[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("clinics")
+}
+
+model Professional {
+  id           String        @id @default(uuid())
+  name         String
+  speciality   String
+  email        String        @unique
+  password     String
+  clinicId     String
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  schedules    Schedule[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("professionals")
+}
+
+model Schedule {
+  id             String         @id @default(uuid())
+  professionalId String
+  professional   Professional   @relation(fields: [professionalId], references: [id])
+  date           DateTime
+  startTime      String // Format: "HH:mm"
+  endTime        String // Format: "HH:mm"
+  status         ScheduleStatus @default(AVAILABLE)
+  appointment    Appointment? // One-to-one relation with Appointment
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("schedules")
+}
+
+model Patient {
+  id           String        @id @default(uuid())
+  name         String
+  cpf          String        @unique
+  email        String        @unique
+  phone        String
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("patients")
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  scheduleId     String            @unique // One-to-one relation with Schedule
+  schedule       Schedule          @relation(fields: [scheduleId], references: [id])
+  status         AppointmentStatus @default(SCHEDULED)
+  clinicId       String
+  clinic         Clinic            @relation(fields: [clinicId], references: [id])
+  professionalId String
+  professional   Professional      @relation(fields: [professionalId], references: [id])
+  patientId      String
+  patient        Patient           @relation(fields: [patientId], references: [id])
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("appointments")
+}
+
+enum UserRole {
+  ADMIN
+  PATIENT
+}
+
+enum ScheduleStatus {
+  AVAILABLE
+  BOOKED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}

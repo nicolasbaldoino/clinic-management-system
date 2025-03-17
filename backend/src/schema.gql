@@ -1,0 +1,159 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Appointment {
+  clinic: Clinic!
+  clinicId: String!
+  createdAt: DateTime!
+  id: ID!
+  patient: Patient!
+  patientId: String!
+  professional: Professional!
+  professionalId: String!
+  schedule: Schedule!
+  scheduleId: String!
+  status: AppointmentStatus!
+  updatedAt: DateTime!
+}
+
+"""Status da consulta"""
+enum AppointmentStatus {
+  CANCELLED
+  COMPLETED
+  CONFIRMED
+  SCHEDULED
+}
+
+type Clinic {
+  appointments: [Appointment!]!
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  professionals: [Professional!]!
+  updatedAt: DateTime!
+  users: [User!]!
+}
+
+input CreateAppointmentInput {
+  clinicId: String!
+  patientId: String!
+  professionalId: String!
+  scheduleId: String!
+  status: AppointmentStatus!
+}
+
+input CreateClinicInput {
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  """Cria uma nova consulta"""
+  createAppointment(createAppointmentInput: CreateAppointmentInput!): Appointment!
+
+  """Cria uma nova clínica"""
+  createClinic(input: CreateClinicInput!): Clinic!
+
+  """Remove uma consulta"""
+  removeAppointment(id: String!): Appointment!
+
+  """Remove uma clínica"""
+  removeClinic(id: String!): Clinic!
+
+  """Atualiza os dados de uma consulta"""
+  updateAppointment(updateAppointmentInput: UpdateAppointmentInput!): Appointment!
+
+  """Atualiza os dados de uma clínica"""
+  updateClinic(id: String!, input: UpdateClinicInput!): Clinic!
+}
+
+type Patient {
+  appointments: [Appointment!]
+  cpf: String!
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  phone: String!
+  updatedAt: DateTime!
+}
+
+type Professional {
+  appointments: [Appointment!]
+  clinic: Clinic!
+  clinicId: String!
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  schedules: [Schedule!]
+  speciality: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  """Busca uma consulta pelo ID"""
+  appointment(id: String!): Appointment!
+
+  """Retorna a lista de todas as consultas"""
+  appointments: [Appointment!]!
+
+  """Busca uma clínica pelo ID"""
+  clinic(id: String!): Clinic!
+
+  """Retorna a lista de todas as clínicas"""
+  clinics: [Clinic!]!
+}
+
+type Schedule {
+  appointment: Appointment
+  createdAt: DateTime!
+  date: DateTime!
+  endTime: String!
+  id: ID!
+  professional: Professional!
+  professionalId: String!
+  startTime: String!
+  status: ScheduleStatus!
+  updatedAt: DateTime!
+}
+
+"""Status do horário"""
+enum ScheduleStatus {
+  AVAILABLE
+  BOOKED
+}
+
+input UpdateAppointmentInput {
+  clinicId: String
+  id: String!
+  patientId: String
+  professionalId: String
+  scheduleId: String
+  status: AppointmentStatus
+}
+
+input UpdateClinicInput {
+  name: String!
+}
+
+type User {
+  clinic: Clinic
+  clinicId: String
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  role: UserRole!
+  updatedAt: DateTime!
+}
+
+"""Papel do usuário no sistema"""
+enum UserRole {
+  ADMIN
+  PATIENT
+}
