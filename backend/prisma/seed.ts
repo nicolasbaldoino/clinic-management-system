@@ -132,6 +132,7 @@ async function main() {
           prisma.schedule.create({
             data: {
               professionalId: professional.id,
+              clinicId: professional.clinicId,
               date,
               startTime: '09:00',
               endTime: '10:00',
@@ -141,6 +142,7 @@ async function main() {
           prisma.schedule.create({
             data: {
               professionalId: professional.id,
+              clinicId: professional.clinicId,
               date,
               startTime: '10:00',
               endTime: '11:00',
@@ -151,6 +153,7 @@ async function main() {
           prisma.schedule.create({
             data: {
               professionalId: professional.id,
+              clinicId: professional.clinicId,
               date,
               startTime: '14:00',
               endTime: '15:00',
@@ -160,6 +163,7 @@ async function main() {
           prisma.schedule.create({
             data: {
               professionalId: professional.id,
+              clinicId: professional.clinicId,
               date,
               startTime: '15:00',
               endTime: '16:00',

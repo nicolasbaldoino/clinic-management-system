@@ -6,13 +6,14 @@ type Appointment {
   clinic: Clinic!
   clinicId: String!
   createdAt: DateTime!
+  date: DateTime!
+  endTime: String!
   id: ID!
   patient: Patient!
   patientId: String!
   professional: Professional!
   professionalId: String!
-  schedule: Schedule!
-  scheduleId: String!
+  startTime: String!
   status: AppointmentStatus!
   updatedAt: DateTime!
 }
@@ -36,11 +37,9 @@ type Clinic {
 }
 
 input CreateAppointmentInput {
-  clinicId: String!
-  patientId: String!
-  professionalId: String!
+  cpf: String!
+  date: DateTime!
   scheduleId: String!
-  status: AppointmentStatus!
 }
 
 input CreateClinicInput {
@@ -53,27 +52,14 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Mutation {
-  """Cria uma nova consulta"""
-  createAppointment(createAppointmentInput: CreateAppointmentInput!): Appointment!
-
-  """Cria uma nova clínica"""
-  createClinic(input: CreateClinicInput!): Clinic!
-
-  """Remove uma consulta"""
-  removeAppointment(id: String!): Appointment!
-
-  """Remove uma clínica"""
-  removeClinic(id: String!): Clinic!
-
-  """Atualiza os dados de uma consulta"""
-  updateAppointment(updateAppointmentInput: UpdateAppointmentInput!): Appointment!
-
-  """Atualiza os dados de uma clínica"""
-  updateClinic(id: String!, input: UpdateClinicInput!): Clinic!
+  cancelAppointment(appointmentId: ID!, cpf: String!): Appointment!
+  createAppointment(input: CreateAppointmentInput!): Appointment!
+  createClinic(createClinicInput: CreateClinicInput!): Clinic!
+  removeClinic(id: ID!): Clinic!
+  updateClinic(id: ID!, updateClinicInput: UpdateClinicInput!): Clinic!
 }
 
 type Patient {
-  appointments: [Appointment!]
   cpf: String!
   createdAt: DateTime!
   email: String!
@@ -84,34 +70,48 @@ type Patient {
 }
 
 type Professional {
-  appointments: [Appointment!]
   clinic: Clinic!
   clinicId: String!
   createdAt: DateTime!
   email: String!
   id: ID!
   name: String!
-  schedules: [Schedule!]
+  schedules: [Schedule!]!
   speciality: String!
   updatedAt: DateTime!
 }
 
 type Query {
-  """Busca uma consulta pelo ID"""
-  appointment(id: String!): Appointment!
-
-  """Retorna a lista de todas as consultas"""
+  appointment(id: ID!): Appointment!
   appointments: [Appointment!]!
-
-  """Busca uma clínica pelo ID"""
-  clinic(id: String!): Clinic!
-
-  """Retorna a lista de todas as clínicas"""
+  appointmentsByClinic(clinicId: ID!): [Appointment!]!
+  appointmentsByPatient(patientId: ID!): [Appointment!]!
+  appointmentsByProfessional(clinicId: ID!, professionalId: ID!): [Appointment!]!
+  appointmentsByStatus(clinicId: ID!, status: AppointmentStatus!): [Appointment!]!
+  availableSchedules(clinicId: ID!, date: DateTime!, professionalId: ID!): [Schedule!]!
+  clinic(id: ID!): Clinic!
   clinics: [Clinic!]!
+  patient(id: ID!): Patient!
+  patientAppointments(cpf: String!): [Appointment!]!
+  patientByCpf(cpf: String!): Patient!
+  patients: [Patient!]!
+  professional(id: ID!): Professional!
+  professionals: [Professional!]!
+  professionalsByClinic(clinicId: ID!): [Professional!]!
+  professionalsBySpeciality(clinicId: ID!, speciality: String!): [Professional!]!
+  schedule(id: ID!): Schedule!
+  schedules: [Schedule!]!
+  schedulesByClinic(clinicId: ID!): [Schedule!]!
+  schedulesByProfessional(clinicId: ID!, professionalId: ID!): [Schedule!]!
+  schedulesByStatus(clinicId: ID!, status: ScheduleStatus!): [Schedule!]!
+  user(id: ID!): User!
+  users: [User!]!
+  usersByClinic(clinicId: ID!): [User!]!
 }
 
 type Schedule {
-  appointment: Appointment
+  clinic: Clinic!
+  clinicId: String!
   createdAt: DateTime!
   date: DateTime!
   endTime: String!
@@ -129,17 +129,8 @@ enum ScheduleStatus {
   BOOKED
 }
 
-input UpdateAppointmentInput {
-  clinicId: String
-  id: String!
-  patientId: String
-  professionalId: String
-  scheduleId: String
-  status: AppointmentStatus
-}
-
 input UpdateClinicInput {
-  name: String!
+  name: String
 }
 
 type User {
@@ -148,6 +139,7 @@ type User {
   createdAt: DateTime!
   email: String!
   id: ID!
+  name: String!
   role: UserRole!
   updatedAt: DateTime!
 }
@@ -155,5 +147,5 @@ type User {
 """Papel do usuário no sistema"""
 enum UserRole {
   ADMIN
-  PATIENT
+  PROFESSIONAL
 }

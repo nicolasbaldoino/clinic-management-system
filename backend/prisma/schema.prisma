@@ -30,6 +30,7 @@ model Clinic {
   users         User[]
   professionals Professional[]
   appointments  Appointment[]
+  schedules     Schedule[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -61,6 +62,9 @@ model Schedule {
   startTime String         @map("start_time") // Format: "HH:mm" 
   endTime   String         @map("end_time") // Format: "HH:mm"
   status    ScheduleStatus @default(AVAILABLE)
+
+  clinicId String @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
 
   professionalId String       @map("professional_id")
   professional   Professional @relation(fields: [professionalId], references: [id])
