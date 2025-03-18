@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { getCookie } from 'cookies-next'
 import { useMemo } from 'react'
@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 export const useApollo = () => {
   const client = useMemo(() => {
     const httpLink = createHttpLink({
-      uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql',
+      uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql',
     })
 
     const authLink = setContext((_, { headers }) => {

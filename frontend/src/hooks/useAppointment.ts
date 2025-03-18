@@ -1,3 +1,5 @@
+import { useQuery } from '@apollo/client'
+
 import {
   GET_APPOINTMENT,
   GET_APPOINTMENTS,
@@ -7,7 +9,7 @@ import {
   GET_APPOINTMENTS_BY_STATUS,
 } from '@/http/graphql/appointment'
 import { Appointment, AppointmentStatus } from '@/http/graphql/types'
-import { useQuery } from '@apollo/client'
+
 import { useApollo } from './useApollo'
 
 export const useGetAppointments = () => {

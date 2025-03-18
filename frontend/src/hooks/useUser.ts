@@ -1,13 +1,15 @@
+import { useMutation, useQuery } from '@apollo/client'
+
 import { CreateUserInput, UpdateUserInput, User } from '@/http/graphql/types'
 import {
-    CREATE_USER,
-    GET_USER,
-    GET_USERS,
-    GET_USERS_BY_CLINIC,
-    REMOVE_USER,
-    UPDATE_USER,
+  CREATE_USER,
+  GET_USER,
+  GET_USERS,
+  GET_USERS_BY_CLINIC,
+  REMOVE_USER,
+  UPDATE_USER,
 } from '@/http/graphql/user'
-import { useMutation, useQuery } from '@apollo/client'
+
 import { useApollo } from './useApollo'
 
 export const useCreateUser = () => {

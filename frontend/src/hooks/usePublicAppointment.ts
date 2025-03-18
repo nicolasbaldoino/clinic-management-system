@@ -1,3 +1,5 @@
+import { useMutation, useQuery } from '@apollo/client'
+
 import {
   CANCEL_APPOINTMENT,
   CREATE_APPOINTMENT,
@@ -5,7 +7,7 @@ import {
   GET_PATIENT_APPOINTMENTS,
 } from '@/http/graphql/public-appointment'
 import { Appointment, CreateAppointmentInput, Schedule } from '@/http/graphql/types'
-import { useMutation, useQuery } from '@apollo/client'
+
 import { useApollo } from './useApollo'
 
 export const useGetAvailableSchedules = (clinicId: string, professionalId: string, date: string) => {
