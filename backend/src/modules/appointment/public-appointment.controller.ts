@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Public } from 'src/common/decorators/public.decorator';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { CreateAppointmentInput } from './dto/create-appointment.input';
 import { PublicAppointmentService } from './public-appointment.service';
@@ -7,6 +8,7 @@ import { PublicAppointmentService } from './public-appointment.service';
 export class PublicAppointmentController {
   constructor(private readonly publicAppointmentService: PublicAppointmentService) {}
 
+  @Public()
   @Get('available-schedules')
   async findAvailableSchedules(
     @Query('clinicId') clinicId: string,
@@ -20,6 +22,7 @@ export class PublicAppointmentController {
     );
   }
 
+  @Public()
   @Post()
   async createAppointment(@Body() input: CreateAppointmentDto) {
     const appointmentInput: CreateAppointmentInput = {
@@ -29,11 +32,13 @@ export class PublicAppointmentController {
     return this.publicAppointmentService.createAppointment(appointmentInput);
   }
 
+  @Public()
   @Get('patient/:cpf')
   async findPatientAppointments(@Param('cpf') cpf: string) {
     return this.publicAppointmentService.findPatientAppointments(cpf);
   }
 
+  @Public()
   @Post('patient/:cpf/cancel/:appointmentId')
   async cancelAppointment(
     @Param('cpf') cpf: string,
