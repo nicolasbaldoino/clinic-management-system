@@ -40,7 +40,6 @@ O projeto está organizado em duas partes principais:
 - Gerenciamento de estado com Apollo Client
 - Estilização com TailwindCSS
 - Formulários com React Hook Form e validação Zod
-- Sistema de temas claro/escuro
 - Componentes de UI modernos e acessíveis
 
 ## 🛠️ Como Executar
