@@ -1,3 +1,5 @@
+import { useMutation, useQuery } from '@apollo/client'
+
 import {
   CREATE_PROFESSIONAL,
   GET_PROFESSIONAL,
@@ -12,7 +14,7 @@ import {
   Professional,
   UpdateProfessionalInput,
 } from '@/http/graphql/types'
-import { useMutation, useQuery } from '@apollo/client'
+
 import { useApollo } from './useApollo'
 
 export const useCreateProfessional = () => {

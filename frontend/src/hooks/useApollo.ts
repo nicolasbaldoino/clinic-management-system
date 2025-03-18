@@ -1,6 +1,6 @@
-import { getCookie } from '@/lib/cookies'
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { getCookie } from 'cookies-next'
 import { useMemo } from 'react'
 
 export const useApollo = () => {

@@ -1,3 +1,5 @@
+import { useMutation, useQuery } from '@apollo/client'
+
 import {
   CREATE_CLINIC,
   GET_CLINIC,
@@ -6,7 +8,7 @@ import {
   UPDATE_CLINIC,
 } from '@/http/graphql/clinic'
 import { Clinic, CreateClinicInput, UpdateClinicInput } from '@/http/graphql/types'
-import { useMutation, useQuery } from '@apollo/client'
+
 import { useApollo } from './useApollo'
 
 export const useCreateClinic = () => {

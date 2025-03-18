@@ -7,7 +7,6 @@ export interface LoginDto {
 
 export interface PatientLoginDto {
   cpf: string
-  password: string
 }
 
 export interface AuthResponse {
@@ -20,12 +19,22 @@ export interface AuthResponse {
   }
 }
 
+export interface PatientResponse {
+  patient: {
+    id: string
+    cpf: string
+    name: string
+    email: string
+    phone: string
+  }
+}
+
 export const authApi = {
   login: async (data: LoginDto): Promise<AuthResponse> => {
     return api.post('auth/login', { json: data }).json()
   },
 
-  patientLogin: async (data: PatientLoginDto): Promise<AuthResponse> => {
+  patientLogin: async (data: PatientLoginDto): Promise<PatientResponse> => {
     return api.post('auth/patient/login', { json: data }).json()
   },
 

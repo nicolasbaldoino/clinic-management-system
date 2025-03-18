@@ -61,7 +61,7 @@ async function main() {
     prisma.patient.create({
       data: {
         name: 'João Silva',
-        cpf: '12345678900',
+        cpf: '18019748024',
         email: 'joao.silva@email.com',
         phone: '(11) 98765-4321',
       },

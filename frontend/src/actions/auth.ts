@@ -1,30 +1,37 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 
 import { authApi } from '@/http/auth'
 
 export async function currentUser() {
   const cookieStore = await cookies()
 
-  const token = cookieStore.get('token')
   const user = cookieStore.get('user')
 
-  if (!token || !user) {
+  if (!user) {
     return null
   }
 
   return JSON.parse(user.value)
 }
 
-export async function login(formData: FormData) {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+export async function currentPatient() {
+  const cookieStore = await cookies()
 
+  const patient = cookieStore.get('patient')
+
+  if (!patient) {
+    return null
+  }
+
+  return JSON.parse(patient.value)
+}
+
+export async function login({ email, password }: { email: string, password: string }) {
   if (!email || !password) {
     return {
-      error: 'Email and password are required',
+      error: 'Email e senha são obrigatórios',
     }
   }
 
@@ -34,62 +41,40 @@ export async function login(formData: FormData) {
     const response = await authApi.login({ email, password })
 
     cookieStore.set('token', response.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
 
     cookieStore.set('user', JSON.stringify(response.user), {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
-
-    redirect('/dashboard')
   } catch (error) {
     return {
-      error: 'Invalid email or password',
+      error: 'Email ou senha inválidos',
     }
   }
 }
 
-export async function patientLogin(formData: FormData) {
-  const cpf = formData.get('cpf') as string
-  const password = formData.get('password') as string
-
-  if (!cpf || !password) {
+export async function patientLogin({ cpf }: { cpf?: string }) {
+  if (!cpf) {
     return {
-      error: 'CPF and password are required',
+      error: 'CPF é obrigatório',
     }
   }
 
   const cookieStore = await cookies()
 
   try {
-    const response = await authApi.patientLogin({ cpf, password })
+    const response = await authApi.patientLogin({ cpf })
 
-    cookieStore.set('token', response.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+    cookieStore.set('patient', JSON.stringify(response.patient), {
       path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
-
-    cookieStore.set('user', JSON.stringify(response.user), {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
-    })
-
-    redirect('/patient/dashboard')
   } catch (error) {
     return {
-      error: 'Invalid CPF or password',
+      error: 'Paciente não encontrado',
     }
   }
 }
@@ -99,6 +84,5 @@ export async function logout() {
 
   cookieStore.delete('token')
   cookieStore.delete('user')
-
-  redirect('/login')
+  cookieStore.delete('patient')
 }
