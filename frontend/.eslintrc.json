@@ -1,8 +1,7 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "next/typescript",
-    "@rocketseat/eslint-config/next"
+    "next/typescript"
   ],
   "plugins": ["simple-import-sort"],
   "rules": {
