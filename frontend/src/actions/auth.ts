@@ -5,6 +5,19 @@ import { redirect } from 'next/navigation'
 
 import { authApi } from '@/http/auth'
 
+export async function currentUser() {
+  const cookieStore = await cookies()
+
+  const token = cookieStore.get('token')
+  const user = cookieStore.get('user')
+
+  if (!token || !user) {
+    return null
+  }
+
+  return JSON.parse(user.value)
+}
+
 export async function login(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
